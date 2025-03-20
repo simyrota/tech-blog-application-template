@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -11,7 +11,8 @@ interface PaginationProps {
   currentPage: number
 }
 
-export function Pagination({ totalPages, currentPage }: PaginationProps) {
+// ページネーションの内部実装
+function PaginationContent({ totalPages, currentPage }: PaginationProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -128,3 +129,11 @@ export function Pagination({ totalPages, currentPage }: PaginationProps) {
   )
 }
 
+// エクスポートされるメインのPaginationコンポーネント
+export function Pagination(props: PaginationProps) {
+  return (
+    <Suspense fallback={<div>Loading pagination...</div>}>
+      <PaginationContent {...props} />
+    </Suspense>
+  )
+}

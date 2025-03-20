@@ -1,13 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search } from "lucide-react"
 
-export function SearchForm() {
+// 検索フォームの内部実装
+function SearchFormContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get("q") || "")
@@ -23,6 +24,9 @@ export function SearchForm() {
       } else {
         params.delete("q")
       }
+
+      // ページをリセット
+      params.delete("page")
 
       router.push(`/blog?${params.toString()}`)
     },
@@ -58,3 +62,11 @@ export function SearchForm() {
   )
 }
 
+// エクスポートされるメインのSearchFormコンポーネント
+export function SearchForm() {
+  return (
+    <Suspense fallback={<div>Loading search form...</div>}>
+      <SearchFormContent />
+    </Suspense>
+  )
+}

@@ -13,6 +13,15 @@ interface BlogPageProps {
   }
 }
 
+// SearchFormをラップするクライアントコンポーネント
+function SearchFormWrapper() {
+  return (
+    <Suspense fallback={<div>Loading search...</div>}>
+      <SearchForm />
+    </Suspense>
+  )
+}
+
 // ブログ記事リストコンポーネント
 async function BlogPostsList({ searchParams }: { searchParams: BlogPageProps["searchParams"] }) {
   const page = searchParams.page ? Number.parseInt(searchParams.page) : 1
@@ -50,7 +59,13 @@ async function BlogPostsList({ searchParams }: { searchParams: BlogPageProps["se
           <BlogCard key={post.id} post={post} priority={index < 4} />
         ))}
       </div>
-      {totalPages > 1 && <Pagination totalPages={totalPages} currentPage={page} />}
+      {totalPages > 1 && (
+        <div className="mt-8">
+          <Suspense fallback={<div className="text-center">Loading pagination...</div>}>
+            <Pagination totalPages={totalPages} currentPage={page} />
+          </Suspense>
+        </div>
+      )}
     </>
   )
 }
@@ -80,7 +95,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="space-y-8">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Search</h2>
-              <SearchForm />
+              <SearchFormWrapper />
             </div>
 
             <div>
@@ -101,4 +116,3 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     </>
   )
 }
-
